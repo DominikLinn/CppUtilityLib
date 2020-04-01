@@ -1,0 +1,39 @@
+# CMake version
+cmake_minimum_required (VERSION 3.12)
+
+# Project name
+project(CppUtilityLib VERSION 0.1.0 LANGUAGES CXX)
+
+
+# CPPUTILITY build options
+option(CPPUTILITY_BUILD_TESTS "Enables build of tests" ON)
+
+message(STATUS "CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
+message(STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
+message(STATUS "CMAKE_CXX_COMPILER: " ${CMAKE_CXX_COMPILER})
+message(STATUS "CMAKE_CXX_COMPILER_VERSION: " ${CMAKE_CXX_COMPILER_VERSION})
+message(STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
+message(STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR})
+message(STATUS "CMAKE_CURRENT_BINARY_DIR: " ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
+message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
+message(STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+message(STATUS "CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
+message(STATUS "PROJECT_NAME: " ${PROJECT_NAME})
+message(STATUS "cpputility_BUILD_TESTS: " ${CPPUTILITY_BUILD_TESTS})
+
+add_library(cpputilitylib INTERFACE)
+
+add_library(cpputility::cpputility ALIAS cpputilitylib)
+
+target_include_directories(cpputilitylib PUBLIC INTERFACE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_features(cpputilitylib INTERFACE cxx_std_17)
+
+
+if(CPPUTILITY_BUILD_TESTS)
+	add_subdirectory(tests)
+endif(CPPUTILITY_BUILD_TESTS)
