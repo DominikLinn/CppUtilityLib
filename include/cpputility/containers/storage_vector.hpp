@@ -20,7 +20,7 @@
 namespace cpputility
 {
 template<typename BaseT, typename DelT = std::default_delete<BaseT>>
-class StorageVector : public VectorBase<StorageVector<BaseT, DelT>>
+class StorageVector : public VectorBase<StorageVector<BaseT, DelT>, BaseT>
 {
 public:
     using const_iterator = ConstIterator<BaseT, StorageVector<BaseT, DelT>>;
@@ -60,19 +60,19 @@ public:
 
     BaseT &get(size_t pos) const
     {
-        assert(pos < size());
+        assert(pos < this->size());
         return *m_objects[pos].get();
     }
 
     BaseT &get_front() const
     {
-        assert(!empty());
+        assert(!this->empty());
         return *m_objects.front().get();
     }
 
     BaseT &get_back() const
     {
-        assert(!empty());
+        assert(!this->empty());
         return *m_objects.back().get();
     }
 

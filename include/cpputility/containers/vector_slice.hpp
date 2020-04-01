@@ -20,7 +20,7 @@
 namespace cpputility
 {
 template<typename VectorT>
-class VectorSlice : public VectorBase<VectorSlice<VectorT>>
+class VectorSlice : public VectorBase<VectorSlice<VectorT>, typename VectorT::value_type>
 {
 private:
     VectorT *m_base;
@@ -89,8 +89,6 @@ public:
     virtual ~VectorSlice() = default;
 };
 
-template<typename VectorT>
-class ConstVectorSlice : public ConstVectorBase<ConstVectorSlice<VectorT>>
 {
 private:
     VectorT *m_base;
