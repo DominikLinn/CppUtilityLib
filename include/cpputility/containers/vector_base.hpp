@@ -6,13 +6,13 @@
 
 namespace cpputility
 {
-template<typename Derived>
+template<typename Derived, typename ValueT>
 class VectorBase
 {
 public:
-    using value_type = typename Derived::value_type;
-    using const_iterator = ConstIterator<value_type, Derived>;
-    using iterator = Iterator<value_type, Derived>;
+    using value_type = ValueT;
+    using const_iterator = ConstIterator<value_type, VectorBase<Derived, ValueT>>;
+    using iterator = Iterator<value_type, VectorBase<Derived, ValueT>>;
 
 public:
     value_type &operator[](ptrdiff_t pos)
@@ -68,18 +68,18 @@ public:
     auto cend() const { return const_iterator(*this, size()); }
 };
 
-template<typename Derived>
+template<typename Derived, typename ValueT>
 class ConstVectorBase
 {
 public:
-    using value_type = typename Derived::value_type;
-    using const_iterator = ConstIterator<value_type, Derived>;
-    using iterator = Iterator<value_type, Derived>;
+    using value_type = ValueT;
+    using const_iterator = ConstIterator<value_type, ConstVectorBase<Derived, ValueT>>;
+    using iterator = Iterator<value_type, ConstVectorBase<Derived, ValueT>>;
 
 public:
     value_type const &operator[](ptrdiff_t pos) const
     {
-        Derived const &derivedObject = static_cast<Derived const &>(*this);
+        auto const &derivedObject = static_cast<Derived const &>(*this);
         return derivedObject.get(pos);
     }
 
@@ -97,7 +97,7 @@ public:
 
     inline ptrdiff_t size() const
     {
-        Derived const &derivedObject = static_cast<Derived const &>(*this);
+        auto const &derivedObject = static_cast<Derived const &>(*this);
         return derivedObject.get_size();
     }
 
@@ -113,57 +113,50 @@ public:
 
 namespace std
 {
-template<typename Derived>
-auto begin(cpputility::VectorBase<Derived> &vec) ->
-    typename cpputility::VectorBase<Derived>::iterator
+template<typename Derived, typename ValueT>
+auto begin(cpputility::VectorBase<Derived, ValueT> &vec)
 {
     return vec.begin();
 }
 
-template<typename Derived>
-auto begin(cpputility::VectorBase<Derived> const &vec) ->
-    typename cpputility::VectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto begin(cpputility::VectorBase<Derived, ValueT> const &vec)
 {
     return vec.begin();
 }
 
-template<typename Derived>
-auto end(cpputility::VectorBase<Derived> &vec) -> typename cpputility::VectorBase<Derived>::iterator
+template<typename Derived, typename ValueT>
+auto end(cpputility::VectorBase<Derived, ValueT> &vec)
 {
     return vec.end();
 }
 
-template<typename Derived>
-auto end(cpputility::VectorBase<Derived> const &vec) ->
-    typename cpputility::VectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto end(cpputility::VectorBase<Derived, ValueT> const &vec)
 {
     return vec.end();
 }
 
-template<typename Derived>
-auto begin(cpputility::ConstVectorBase<Derived> &vec) ->
-    typename cpputility::ConstVectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto begin(cpputility::ConstVectorBase<Derived, ValueT> &vec)
 {
     return vec.begin();
 }
 
-template<typename Derived>
-auto end(cpputility::ConstVectorBase<Derived> &vec) ->
-    typename cpputility::ConstVectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto end(cpputility::ConstVectorBase<Derived, ValueT> &vec)
 {
     return vec.end();
 }
 
-template<typename Derived>
-auto begin(cpputility::ConstVectorBase<Derived> const &vec) ->
-    typename cpputility::ConstVectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto begin(cpputility::ConstVectorBase<Derived, ValueT> const &vec)
 {
     return vec.begin();
 }
 
-template<typename Derived>
-auto end(cpputility::ConstVectorBase<Derived> const &vec) ->
-    typename cpputility::ConstVectorBase<Derived>::const_iterator
+template<typename Derived, typename ValueT>
+auto end(cpputility::ConstVectorBase<Derived, ValueT> const &vec)
 {
     return vec.end();
 }

@@ -21,7 +21,7 @@
 namespace cpputility
 {
 template<typename BaseT>
-class ReferenceVector : public VectorBase<ReferenceVector<BaseT>>
+class ReferenceVector : public VectorBase<ReferenceVector<BaseT>, BaseT>
 {
 private:
     std::vector<std::reference_wrapper<BaseT>> m_refs;
@@ -81,5 +81,6 @@ public:
 
     void emplace_back(BaseT &value) { m_refs.emplace_back(std::ref(value)); }
 };
+
 } // namespace cpputility
 #endif // CPPUTILITY_CONTAINERS_REFERENCE_VECTOR_HPP

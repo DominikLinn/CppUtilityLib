@@ -20,7 +20,7 @@
 namespace cpputility
 {
 template<class VectorT>
-class VectorView : public VectorBase<VectorView<VectorT>>
+class VectorView : public VectorBase<VectorView<VectorT>, typename VectorT::value_type>
 {
 private:
     VectorT *m_base;
@@ -30,7 +30,7 @@ public:
 
     VectorView() = delete;
 
-    VectorView(VectorT &array) : m_base{array} {}
+    VectorView(VectorT &array) : m_base{&array} {}
 
     VectorView(VectorView const &other) : m_base{other.m_base} {}
 
@@ -50,17 +50,17 @@ public:
         return *this;
     }
 
-    inline value_type &get(ptrdiff_t pos) { return std::ref(m_base[pos]); }
+    inline value_type &get(ptrdiff_t pos) { return (*m_base)[pos]; }
 
-    inline value_type const &get(ptrdiff_t pos) const { return std::ref(m_base[pos]); }
+    inline value_type const &get(ptrdiff_t pos) const { return (*m_base)[pos]; }
 
-    inline value_type &get_front() { return std::ref(m_base->front()); }
+    inline value_type &get_front() { return m_base->front(); }
 
-    inline value_type const &get_front() const { return std::ref(m_base->front()); }
+    inline value_type const &get_front() const { return m_base->front(); }
 
-    inline value_type &get_back() { return std::ref(m_base->back()); }
+    inline value_type &get_back() { return m_base->back(); }
 
-    inline value_type const &get_back() const { return std::ref(m_base->back()); }
+    inline value_type const &get_back() const { return m_base->back(); }
 
     inline ptrdiff_t get_size() const { return m_base->size(); }
 
@@ -68,7 +68,8 @@ public:
 };
 
 template<class VectorT>
-class ConstVectorView : public ConstVectorBase<VectorView<VectorT>>
+class ConstVectorView
+    : public ConstVectorBase<ConstVectorView<VectorT>, typename VectorT::value_type>
 {
 private:
     VectorT *m_base;
@@ -78,7 +79,9 @@ public:
 
     ConstVectorView() = delete;
 
-    ConstVectorView(VectorT &array) : m_base{array} {}
+    ConstVectorView(VectorT &array) : m_base{&array} {}
+
+    ConstVectorView(VectorT const &array) : m_base{const_cast<VectorT &>(&array)} {}
 
     ConstVectorView(ConstVectorView const &other) : m_base{other.m_base} {}
 
@@ -98,15 +101,16 @@ public:
         return *this;
     }
 
-    inline value_type const &get(ptrdiff_t pos) const { return std::ref(m_base[pos]); }
+    inline value_type const &get(ptrdiff_t pos) const { return (*m_base)[pos]; }
 
-    inline value_type const &get_front() const { return std::ref(m_base->front()); }
+    inline value_type const &get_front() const { return m_base->front(); }
 
-    inline value_type const &get_back() const { return std::ref(m_base->back()); }
+    inline value_type const &get_back() const { return m_base->back(); }
 
     inline ptrdiff_t get_size() const { return m_base->size(); }
 
     virtual ~ConstVectorView() = default;
 };
+
 } // namespace cpputility
 #endif // CPPUTILITY_CONTAINERS_VECTOR_VIEW_HPP
