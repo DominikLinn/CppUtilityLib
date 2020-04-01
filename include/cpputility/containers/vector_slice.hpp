@@ -34,7 +34,7 @@ public:
     VectorSlice() = delete;
 
     VectorSlice(VectorT &array, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride = 1)
-        : m_base{array}, m_start{start}, m_stride{stride}, m_end{end}
+        : m_base{&array}, m_start{start}, m_stride{stride}, m_end{end}
     {
         // REQUIRE(start, ErrorHandling::isLessOrEqualTo, end);
         // REQUIRE(start, ErrorHandling::isGreaterOrEqualTo, size_t{0});
@@ -71,11 +71,11 @@ public:
 
     inline size_t get_size() const { return (m_end - m_start) / m_stride; }
 
-    inline value_type &get(ptrdiff_t pos) { return std::ref(m_base[m_start + m_stride * pos]); }
+    inline value_type &get(ptrdiff_t pos) { return (*m_base)[m_start + m_stride * pos]; }
 
     inline value_type const &get(ptrdiff_t pos) const
     {
-        return std::ref(m_base[m_start + m_stride * pos]);
+        return (*m_base)[m_start + m_stride * pos];
     }
 
     inline value_type &get_front() { return get(0); }
@@ -89,6 +89,9 @@ public:
     virtual ~VectorSlice() = default;
 };
 
+template<typename VectorT>
+class ConstVectorSlice
+    : public ConstVectorBase<ConstVectorSlice<VectorT>, typename VectorT::value_type>
 {
 private:
     VectorT *m_base;
@@ -102,7 +105,7 @@ public:
     ConstVectorSlice() = delete;
 
     ConstVectorSlice(VectorT &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride = 1)
-        : m_base{vec}, m_start{start}, m_stride{stride}, m_end{end}
+        : m_base{&vec}, m_start{start}, m_stride{stride}, m_end{end}
     {
         // REQUIRE(start, ErrorHandling::isLessOrEqualTo, end);
         // REQUIRE(start, ErrorHandling::isGreaterOrEqualTo, size_t{0});
@@ -141,7 +144,7 @@ public:
 
     inline value_type const &get(ptrdiff_t pos) const
     {
-        return std::ref(m_base[m_start + m_stride * pos]);
+        return (*m_base)[m_start + m_stride * pos];
     }
 
     inline value_type const &get_front() const { return get(0); }
@@ -155,7 +158,6 @@ template<typename VectorT>
 auto slice(VectorT &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 
 {
-    static_assert(std::is_base_of_v<VectorBase<VectorT>, VectorT>);
     using Slice = VectorSlice<VectorT>;
     return Slice(vec, start, end, stride);
 }
@@ -163,7 +165,6 @@ auto slice(VectorT &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 template<typename VectorT>
 auto slice(VectorT const &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 {
-    static_assert(std::is_base_of_v<VectorBase<VectorT>, VectorT>);
     using Slice = ConstVectorSlice<VectorT>;
     return Slice(const_cast<VectorT &>(vec), start, end, stride);
 }
@@ -171,7 +172,6 @@ auto slice(VectorT const &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 template<typename VectorT>
 auto const_slice(VectorT const &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 {
-    static_assert(std::is_base_of_v<VectorBase<VectorT>, VectorT>);
     using Slice = ConstVectorSlice<VectorT>;
     return Slice(const_cast<VectorT &>(vec), start, end, stride);
 }
@@ -179,7 +179,6 @@ auto const_slice(VectorT const &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t s
 template<typename VectorT>
 auto const_slice(VectorT &vec, ptrdiff_t start, ptrdiff_t end, ptrdiff_t stride)
 {
-    static_assert(std::is_base_of_v<VectorBase<VectorT>, VectorT>);
     using Slice = ConstVectorSlice<VectorT>;
     return Slice(vec, start, end, stride);
 }
